@@ -47,7 +47,7 @@ async function failCounter(failChannel, forcedBase = -1) {
         await pinMsg[1].unpin();
     }
 
-    setTimeout(() => {
+    setTimeout(async () => {
         let newBase = randomInt(2, 20);
         countDb.base = forcedBase == -1 ? newBase : forcedBase;
         countDb.count = 0;
