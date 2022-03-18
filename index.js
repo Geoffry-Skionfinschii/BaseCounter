@@ -41,6 +41,8 @@ async function failCounter(failChannel, forcedBase = -1) {
     countDb.base = forcedBase == -1 ? newBase : forcedBase;
     countDb.count = 0;
 
+    countDb.prevAuthor = null;
+
     let newMsg = new MessageEmbed();
     newMsg.setTitle(`New Game - Base ${countDb.base}`)
     newMsg.setDescription(`This round is in base ${countDb.base} - this means valid numbers include the symbols \n\`${symbols.substring(0, countDb.base)}\``);
