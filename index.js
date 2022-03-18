@@ -42,9 +42,10 @@ async function failCounter(failChannel, forcedBase = -1) {
     await failChannel.send({embeds: [failmsg]});
 
 
-    (await failChannel.messages.fetchPinned()).forEach((msg) => {
-        await msg.unpin();
-    })
+    let pinned = await failChannel.messages.fetchPinned();
+    for(let pinMsg of pinned) {
+        await pinMsg[1].unpin();
+    }
 
     setTimeout(() => {
         let newBase = randomInt(2, 20);
