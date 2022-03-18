@@ -9,7 +9,7 @@ const { randomInt } = require('crypto');
 const { MessageEmbed } = require('discord.js');
 const fs = require('fs');
 
-const channel = "954327227057709077";
+const channel = "954336994580897853";
 const runningGuild = "693719703452909568";
 
 let countDb = {
