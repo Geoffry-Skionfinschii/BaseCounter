@@ -17,7 +17,8 @@ let isCounting = true;
 let countDb = {
     base: -1,
     count: 0,
-    prevAuthor: null
+    prevAuthor: null,
+    prevPin: null
 }
 
 function loadDB() {
@@ -40,6 +41,11 @@ async function failCounter(failChannel, forcedBase = -1) {
     failmsg.setDescription(`You made it to ${countDb.count} in base${countDb.base}`);
     await failChannel.send({embeds: [failmsg]});
 
+
+    (await failChannel.messages.fetchPinned()).forEach((msg) => {
+        await msg.unpin();
+    })
+
     setTimeout(() => {
         let newBase = randomInt(2, 20);
         countDb.base = forcedBase == -1 ? newBase : forcedBase;
@@ -50,7 +56,10 @@ async function failCounter(failChannel, forcedBase = -1) {
         let newMsg = new MessageEmbed();
         newMsg.setTitle(`New Game - Base ${countDb.base}`)
         newMsg.setDescription(`This round is in base ${countDb.base} - this means valid numbers include the symbols \n\`${symbols.substring(0, countDb.base)}\``);
-        await (await failChannel.send({embeds: [newMsg]})).pin();
+
+        let createdMsg = await failChannel.send({embeds: [newMsg]});
+        await createdMsg.pin();
+        //countDb.prevPin = createdMsg.id;
 
         saveDB();
         isCounting = true;
