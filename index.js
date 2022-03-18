@@ -12,6 +12,8 @@ const fs = require('fs');
 const channel = "954336994580897853";
 const runningGuild = "693719703452909568";
 
+let isCounting = true;
+
 let countDb = {
     base: -1,
     count: 0,
@@ -32,23 +34,27 @@ function saveDB() {
  * @param {import('discord.js').TextChannel} failChannel
  */
 async function failCounter(failChannel, forcedBase = -1) {
+    isCounting = false;
     let failmsg = new MessageEmbed();
     failmsg.setTitle(`The count was disrupted!`);
     failmsg.setDescription(`You made it to ${countDb.count} in base${countDb.base}`);
     await failChannel.send({embeds: [failmsg]});
 
-    let newBase = randomInt(2, 20);
-    countDb.base = forcedBase == -1 ? newBase : forcedBase;
-    countDb.count = 0;
+    setTimeout(() => {
+        let newBase = randomInt(2, 20);
+        countDb.base = forcedBase == -1 ? newBase : forcedBase;
+        countDb.count = 0;
 
-    countDb.prevAuthor = null;
+        countDb.prevAuthor = null;
 
-    let newMsg = new MessageEmbed();
-    newMsg.setTitle(`New Game - Base ${countDb.base}`)
-    newMsg.setDescription(`This round is in base ${countDb.base} - this means valid numbers include the symbols \n\`${symbols.substring(0, countDb.base)}\``);
-    await (await failChannel.send({embeds: [newMsg]})).pin();
+        let newMsg = new MessageEmbed();
+        newMsg.setTitle(`New Game - Base ${countDb.base}`)
+        newMsg.setDescription(`This round is in base ${countDb.base} - this means valid numbers include the symbols \n\`${symbols.substring(0, countDb.base)}\``);
+        await (await failChannel.send({embeds: [newMsg]})).pin();
 
-    saveDB();
+        saveDB();
+        isCounting = true;
+    }, 10000);
 }
 
 loadDB();
@@ -81,6 +87,8 @@ client.on('interactionCreate', async (interaction) => {
 client.on('messageCreate', async (message) => {
     if(message.channelId != channel) return;
     if(message.author.bot) return;
+
+    if(!isCounting) return;
 
     let cleanMessage = message.content.trim().toLowerCase();
     if(cleanMessage.includes(`/`)) return;
